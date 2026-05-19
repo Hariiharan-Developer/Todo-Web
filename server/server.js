@@ -2,7 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv').config()
 const colors = require('colors')
 const connectDb = require('./config/db')
-const router = require('../router/todo.router')
+const router = require('./router/todo.router')
 const app = express()
 
 const port = process.env.PORT || 4000
