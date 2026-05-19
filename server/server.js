@@ -7,6 +7,10 @@ const app = express()
 
 const port = process.env.PORT || 4000
 
+//MIddleware :
+app.use(express.json())
+app.use(express.urlencoded({extended:false}))
+
 //API Endpoint's :
 app.use('/api/v1',router)
 
