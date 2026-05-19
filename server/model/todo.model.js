@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const todoSchema = new mongoose.Schema({
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:[true , 'user not fetched']
+    },
     task:{
         type:String,
         required:[true , 'please fill task field']
