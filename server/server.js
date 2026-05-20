@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended:false}))
 
 //API Endpoint's :
 app.use('/api/v1',router)
-app.use('/api/v1',userRouter)
+app.use('/api/v1/user',userRouter)
 
 //Unmatched API End point's :
 app.use((req,res)=>{

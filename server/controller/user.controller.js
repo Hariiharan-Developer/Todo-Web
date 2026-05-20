@@ -64,31 +64,23 @@ const loginUser =asyncHandler(async(req,res)=>{
 
 //GET USER :
 const getUser = asyncHandler(async(req,res)=>{
-    const user = await User.find()
-    res.json(req.user)
+    const user = await User.findById(req.user.id).select('-password')
+    res.json(user)
 })
 
 // UPDATE USER DETAIL :
 const updateUser = asyncHandler(async(req,res)=>{
-    const {id} = req.params
     const {name,email,password} = req.body
+    const user = await User.findById(req.user.id)
 
-    if(!id){
+    if(!user){
         res.status(400)
-        throw new Error('Invalid credantial')
+        throw new Error(' Not Authorized ')
     }
 
-    const userExist = await User.findById(id)
-    if(!userExist){
-        res.status(400)
-        throw new Error('Invalid user')
-    }
-
-    const updateData = {
-        name,
-        email,        
-    }
-
+   
+    if(name) user.name = name
+    if(email) user.email = email
     if(password){
         if(password.length < 8){
             res.status(400)
@@ -97,16 +89,11 @@ const updateUser = asyncHandler(async(req,res)=>{
         //BCRYPT :
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password,salt)
-        updateData.password = hashedPassword
+        user.password = hashedPassword
     }
 
-    const updateUser = await User.findByIdAndUpdate(id,
-            updateData,
-        {
-            new:true,
-            runValidators:true
-        },
-    )
+    const updateUser = await user.save()
+
     res.status(201).json({
         _id:updateUser.id,
         name:updateUser.name,
@@ -116,17 +103,13 @@ const updateUser = asyncHandler(async(req,res)=>{
 
 //DELETE USER :
 const deleteUser = asyncHandler(async(req,res)=>{
-    const {id} = req.params
-    if(!id){
+    const user = await User.findById(req.user.id)
+    if(!user){
         res.status(400)
-        throw new Error('Invalid credantial')
+        throw new Error('Not Authorized')
     }
-    const userExist = await User.findById(id)
-    if(!userExist){
-        res.status(400)
-        throw new Error('User not found')
-    }
-    const removeUser = await User.findByIdAndDelete(id)
+    
+    const removeUser = await User.findByIdAndDelete(req.user.id)
     res.status(200).json({message:'user deleted succesfully'})
 })
 

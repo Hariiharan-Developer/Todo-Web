@@ -8,8 +8,8 @@ userRouter.post('/register',registerUser)
 userRouter.post('/login',loginUser)
 
 //PROTECTED ROUTER :
-userRouter.get('/user',protect,getUser)
-userRouter.put('/updateUser/protect',updateUser)
-userRouter.delete('/deleteUser/protect',deleteUser)
+userRouter.get('/me',protect,getUser)
+userRouter.put('/update',protect,updateUser)
+userRouter.delete('/delete',protect,deleteUser)
 
 module.exports = userRouter

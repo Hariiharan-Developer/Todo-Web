@@ -1,10 +1,11 @@
 const express = require('express')
 const { getTodo, createTodo, updateTodo, deleteTodo } = require('../controller/todo.controller')
+const protect = require('../middleware/protect')
 const router = express.Router()
 
-router.get('/',getTodo)
-router.post('/',createTodo)
-router.put('/:id',updateTodo)
-router.delete('/:id',deleteTodo)
+router.get('/',protect,getTodo)
+router.post('/',protect,createTodo)
+router.put('/:id',protect,updateTodo)
+router.delete('/:id',protect,deleteTodo)
 
 module.exports = router

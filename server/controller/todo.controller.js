@@ -4,11 +4,11 @@ const asyncHandler =require('express-async-handler')
 
 //GET METHOD:
 const getTodo =asyncHandler(async(req,res)=>{
-        const todo = await Todo.find()
+        const todo = await Todo.find({user:req.user.id})
         if(todo.length <= 0){
             res.status(201).json({message:'Todo is Empty , create new Task'})
         }
-        res.status(200).json({message:todo})   
+        res.status(200).json(todo)   
 }) 
 
 //CREATE METHOD
@@ -18,6 +18,7 @@ const createTodo =asyncHandler(async(req,res)=>{
         throw new Error('Task & Description required')
         }
         const newTodo = await Todo.create({
+            user:req.user.id,
             task,
             description,
             completed
@@ -35,6 +36,13 @@ const updateTodo =asyncHandler(async(req,res)=>{
         if(!existTodo){
             throw new Error('Task not found')
         }
+
+        if(existTodo.user.toString() !== req.user.id){
+            res.status(404)
+            throw new Error('Not Authorized')
+        }
+
+
         const modifyTodo = await Todo.findByIdAndUpdate(id,{
             task,
             description,
@@ -51,6 +59,10 @@ const deleteTodo =asyncHandler( async(req,res)=>{
         const existTodo = await Todo.findById(id)
         if(!existTodo){
             throw new Error('Todo not found')
+        }
+        if(existTodo.user.toString() !== req.user.id){
+            res.status(404)
+            throw new Error('Not Authorized')
         }
         const removeTodo = await Todo.findByIdAndDelete(id)
         res.status(200).json({message:`Todo deleted ${removeTodo.id}`})
