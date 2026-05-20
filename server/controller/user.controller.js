@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const User = require('../model/user.model')
 const bcrypt = require('bcryptjs')
+const genToken = require('../utils/jwt')
 
 //REGISTER USER:
 const registerUser = asyncHandler(async(req,res)=>{
@@ -31,7 +32,8 @@ const registerUser = asyncHandler(async(req,res)=>{
     res.json({
         _id:newUser._id,
         name :newUser.name,
-        email: newUser.email
+        email: newUser.email,
+        token:genToken(newUser._id)
     })
 })
 
@@ -55,14 +57,15 @@ const loginUser =asyncHandler(async(req,res)=>{
     res.json({
         _id: findUser.id,
         name:findUser.name,
-        email:findUser.email
+        email:findUser.email,
+        token:genToken(findUser._id)
     })
 })
 
 //GET USER :
 const getUser = asyncHandler(async(req,res)=>{
     const user = await User.find()
-    res.json({user})
+    res.json(req.user)
 })
 
 // UPDATE USER DETAIL :
@@ -126,7 +129,6 @@ const deleteUser = asyncHandler(async(req,res)=>{
     const removeUser = await User.findByIdAndDelete(id)
     res.status(200).json({message:'user deleted succesfully'})
 })
-
 
 
 

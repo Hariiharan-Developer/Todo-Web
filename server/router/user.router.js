@@ -1,11 +1,15 @@
 const express = require('express')
 const { getUser, registerUser, loginUser, updateUser, deleteUser } = require('../controller/user.controller')
+const protect = require('../middleware/protect')
 const userRouter = express.Router()
 
-userRouter.get('/user',getUser)
+//PUBLIC ROUTER :
 userRouter.post('/register',registerUser)
 userRouter.post('/login',loginUser)
-userRouter.put('/updateUser/:id',updateUser)
-userRouter.delete('/deleteUser/:id',deleteUser)
+
+//PROTECTED ROUTER :
+userRouter.get('/user',protect,getUser)
+userRouter.put('/updateUser/protect',updateUser)
+userRouter.delete('/deleteUser/protect',deleteUser)
 
 module.exports = userRouter
