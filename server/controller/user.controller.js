@@ -72,7 +72,6 @@ const getUser = asyncHandler(async(req,res)=>{
 const updateUser = asyncHandler(async(req,res)=>{
     const {name,email,password} = req.body
     const user = await User.findById(req.user.id)
-
     if(!user){
         res.status(400)
         throw new Error(' Not Authorized ')
@@ -80,7 +79,13 @@ const updateUser = asyncHandler(async(req,res)=>{
 
    
     if(name) user.name = name
-    if(email) user.email = email
+    if(email) {
+        const emailExist = await User.findOne({email})
+        if(emailExist && emailExist._id.toString() !== req.user.id){
+            res.status(400)
+            throw new Error('Email already used please check')
+        }
+    }
     if(password){
         if(password.length < 8){
             res.status(400)
