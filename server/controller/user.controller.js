@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const User = require('../model/user.model')
 const bcrypt = require('bcryptjs')
 const genToken = require('../utils/jwt')
+const sendMail = require('../utils/nodemailer')
 
 //REGISTER USER:
 const registerUser = asyncHandler(async(req,res)=>{
@@ -120,12 +121,93 @@ const deleteUser = asyncHandler(async(req,res)=>{
     res.status(200).json({message:'user deleted succesfully'})
 })
 
+//FORGET PASSWORD :
+const forgetPassword = asyncHandler(async(req,res)=>{
+    const {email} = req.body
+    const user = await User.findOne({email})
+    if(!user){
+        res.status(400)
+        throw new Error('email id not valid')
+    }
 
+    // OTP GENERATION :
+    const otp = Math.floor(100000+Math.random()*900000).toString()
+    user.otp = otp
+    user.otpExpires = Date.now() + 5*60*1000
+    await user.save()
+
+    await sendMail(
+        email,
+        'Password Reset OTP',
+        `Your OTP is: ${otp}. It will expire in 5 minutes.`
+    )
+
+    res.status(200).json({message:'OTP sent to email successfully'})
+})
+
+//VERIFY OTP :
+const verifyOTP = asyncHandler(async(req,res)=>{
+    const {email,otp} = req.body
+
+    const user = await User.findOne({email})
+    if(!user){
+        res.status(400)
+        throw new Error('Invalid email address')
+    }
+
+    if(user.otp !== otp){
+        res.status(400)
+        throw new Error('Invalid OTP')
+    }
+
+    if(user.otpExpires <Date.now()){
+        res.status(400)
+        throw new Error('OTP Expired')
+    }
+
+    res.status(200).json({message:'OTP verified successfully'})
+})
+
+const resetPassword = asyncHandler(async (req, res) => {
+
+    const { email, newPassword } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid email address');
+    }
+
+    if (!newPassword) {
+        res.status(400);
+        throw new Error('New password is required');
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+
+    // clear OTP fields
+    user.otp = null;
+    user.otpExpires = null; // make sure this matches your model
+
+    await user.save();
+
+    res.status(200).json({
+        message: 'Password reset successfully'
+    });
+
+});
 
 module.exports ={
     registerUser,
     loginUser,
     getUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    forgetPassword,
+    verifyOTP,
+    resetPassword
 }
