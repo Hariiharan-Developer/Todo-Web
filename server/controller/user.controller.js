@@ -5,7 +5,7 @@ const genToken = require('../utils/jwt')
 
 //REGISTER USER:
 const registerUser = asyncHandler(async(req,res)=>{
-    const {name,email,password} = req.body
+    const {name,email,password,role} = req.body
     if(!name || !email || !password){
         res.status(400)
         throw new Error('To register new user must have Name ,Email & Password ')
@@ -26,6 +26,7 @@ const registerUser = asyncHandler(async(req,res)=>{
     const newUser = await User.create({
         name,
         email,
+        role,
         password:hashedPassword
     })
 
@@ -108,13 +109,14 @@ const updateUser = asyncHandler(async(req,res)=>{
 
 //DELETE USER :
 const deleteUser = asyncHandler(async(req,res)=>{
-    const user = await User.findById(req.user.id)
+    const{id} = req.params
+    const user = await User.findById(id)
     if(!user){
         res.status(400)
-        throw new Error('Not Authorized')
+        throw new Error('user not found')
     }
     
-    const removeUser = await User.findByIdAndDelete(req.user.id)
+    const removeUser = await User.findByIdAndDelete(id)
     res.status(200).json({message:'user deleted succesfully'})
 })
 
