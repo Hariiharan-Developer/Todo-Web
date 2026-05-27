@@ -1,6 +1,7 @@
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import { useNavigate ,Link} from "react-router-dom";
+import {FaPaperPlane} from 'react-icons/fa'
 
 const LoginModal = ({ onClose }) => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const LoginModal = ({ onClose }) => {
     handleBlur,
     handleChange,
     handleSubmit,
+    isSubmitting
   } = useFormik({
     initialValues: {
       email: "",
@@ -163,7 +165,8 @@ const LoginModal = ({ onClose }) => {
               border: "none",
             }}
           >
-            Login
+              { isSubmitting ? <FaPaperPlane style={{color:'black'}} ></FaPaperPlane> : 
+                        'Login'}
           </button>
         </form>
 

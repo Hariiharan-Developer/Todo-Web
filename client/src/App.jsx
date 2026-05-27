@@ -9,7 +9,6 @@ import ResetPassword from './component/ResetPassword'
 import SecuritySettings from './component/Security'
 import {Toaster} from 'react-hot-toast'
 import ProtectRouter from './component/ProtectRouter'
-import { LogOut } from 'lucide-react'
 const App = () => {
   return (
     <div>
