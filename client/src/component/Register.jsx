@@ -1,15 +1,19 @@
 import { useFormik } from 'formik'
 import { registerSchema } from '../assets/validation'
+import toast from 'react-hot-toast'
+import {Link, useNavigate} from 'react-router-dom'
+import {FaPaperPlane} from 'react-icons/fa'
 
 const Register = () => {
-
+  const navigate = useNavigate()
   const {
     values,
     handleBlur,
     handleChange,
     handleSubmit,
     errors,
-    touched
+    touched,
+    isSubmitting
   } = useFormik({
     initialValues: {
       name: '',
@@ -21,10 +25,25 @@ const Register = () => {
 
     validationSchema: registerSchema,
 
-    onSubmit: (values) => {
-      console.log(values)
+    onSubmit: async function handleSubmit(){
+      const res = await fetch('http://localhost:8000/api/v1/user/register',{
+        method:'post',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(values)
+      })
+
+      const data =await res.json()
+      if(!res.ok){
+        return toast.error(data.message)
+      }
+      toast.success(data.message)
+      navigate('/login')
     }
   })
+
+
 
   return (
     <div
@@ -262,7 +281,9 @@ const Register = () => {
               transition: '0.3s'
             }}
           >
-            Create Account
+            { isSubmitting ? <FaPaperPlane style={{color:'black'}} /> : 
+                        'Create Account'}
+            
           </button>
 
         </form>
@@ -280,7 +301,7 @@ const Register = () => {
                 cursor: 'pointer'
               }}
             >
-              Login
+              <Link className='text-decoration-none' to='/login'>Login</Link> 
             </span>
           </p>
 

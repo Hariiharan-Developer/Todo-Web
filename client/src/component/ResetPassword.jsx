@@ -1,15 +1,51 @@
 import { useFormik } from "formik";
 import { updatePasswodSchema } from "../assets/validation";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
+      email: localStorage.getItem("resetEmail") || "",
       newPassword: "",
       confirmPassword: "",
     },
+
     validationSchema: updatePasswodSchema,
-    onSubmit: (values) => {
-      console.log(values);
+
+    onSubmit: async (values) => {
+      try {
+        const res = await fetch(
+          "http://localhost:8000/api/v1/user/reset-password",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: values.email,
+              newPassword: values.newPassword,
+            }),
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          return toast.error(data.message);
+        }
+
+        toast.success(data.message);
+
+        localStorage.removeItem("resetEmail");
+
+        navigate("/login");
+      } catch (err) {
+        console.log(err);
+        toast.error("Internal Server Error");
+      }
     },
   });
 
@@ -20,7 +56,6 @@ const ResetPassword = () => {
         background: "linear-gradient(135deg, #0f172a, #111827, #1e293b)",
       }}
     >
-
       {/* CARD */}
       <div
         className="card border-0 shadow-lg p-4 p-md-5 text-white"
@@ -31,10 +66,8 @@ const ResetPassword = () => {
           borderRadius: "16px",
         }}
       >
-
-        {/* LOGO */}
+        {/* HEADER */}
         <div className="text-center mb-4">
-
           <div
             className="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle fw-bold"
             style={{
@@ -44,23 +77,23 @@ const ResetPassword = () => {
               fontSize: "28px",
             }}
           >
-            R
+            🔐
           </div>
 
           <h3 className="fw-bold">Reset Password</h3>
 
           <p className="text-secondary mb-0">
-            Create your new secure password 🔐
+            Create your new secure password
           </p>
-
         </div>
 
         {/* FORM */}
         <form onSubmit={formik.handleSubmit}>
+          {/* EMAIL (hidden UI but used internally) */}
+          <input type="hidden" name="email" value={formik.values.email} />
 
           {/* NEW PASSWORD */}
           <div className="mb-3">
-
             <label className="form-label text-light fw-semibold">
               New Password
             </label>
@@ -72,10 +105,12 @@ const ResetPassword = () => {
               value={formik.values.newPassword}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className="form-control form-control-lg border-0 text-white"
-              style={{
-                background: "#1f2937",
-              }}
+              className={`form-control form-control-lg border-0 text-white ${
+                formik.touched.newPassword && formik.errors.newPassword
+                  ? "is-invalid"
+                  : ""
+              }`}
+              style={{ background: "#1f2937" }}
             />
 
             {formik.touched.newPassword && formik.errors.newPassword && (
@@ -87,7 +122,6 @@ const ResetPassword = () => {
 
           {/* CONFIRM PASSWORD */}
           <div className="mb-4">
-
             <label className="form-label text-light fw-semibold">
               Confirm Password
             </label>
@@ -99,10 +133,13 @@ const ResetPassword = () => {
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              className="form-control form-control-lg border-0 text-white"
-              style={{
-                background: "#1f2937",
-              }}
+              className={`form-control form-control-lg border-0 text-white ${
+                formik.touched.confirmPassword &&
+                formik.errors.confirmPassword
+                  ? "is-invalid"
+                  : ""
+              }`}
+              style={{ background: "#1f2937" }}
             />
 
             {formik.touched.confirmPassword &&
@@ -126,9 +163,7 @@ const ResetPassword = () => {
           >
             Reset Password
           </button>
-
         </form>
-
       </div>
     </div>
   );

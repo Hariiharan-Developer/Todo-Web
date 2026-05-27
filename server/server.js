@@ -5,11 +5,13 @@ const connectDb = require('./config/db')
 const router = require('./router/todo.router')
 const errorHandler = require('./middleware/error.middleware')
 const userRouter = require('./router/user.router')
+const cors = require('cors')
 const app = express()
 
 const port = process.env.PORT || 4000
 //Database CB :
 connectDb()
+app.use(cors())
 
 //MIddleware :
 app.use(express.json())

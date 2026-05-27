@@ -1,15 +1,39 @@
 import { useFormik } from "formik";
 import { forgotPasswordSchema } from "../assets/validation";
+import toast from "react-hot-toast";
+import {useNavigate} from 'react-router-dom'
+import {FaPaperPlane} from 'react-icons/fa'
 
 const ForgotPassword = () => {
+  const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {
       email: "",
     },
     validationSchema: forgotPasswordSchema,
-    onSubmit: (values) => {
-      console.log(values);
-    },
+    onSubmit: async function handleSubmit(){
+      try{
+        const res = await fetch('http://localhost:8000/api/v1/user/forget-password',{
+          method:'post',
+          headers:{
+            'Content-Type':'application/json'
+          },
+          body:JSON.stringify(formik.values)
+        })
+        const data = await res.json()
+        console.log(data)
+        localStorage.setItem('resetEmail',data.user.email)
+        if(!res.ok){
+          return toast.error(data.message)
+        }
+        toast.success(data.message)
+        navigate('/Otp-verify')
+
+      }catch(err){
+        toast.error('Internal Server Error')
+        console.log(err)
+      }
+    }
   });
 
   return (
@@ -94,7 +118,8 @@ const ForgotPassword = () => {
               borderRadius: "10px",
             }}
           >
-            Send OTP
+            { formik.isSubmitting ? <FaPaperPlane style={{color:'black'}} ></FaPaperPlane> : 
+            'Send OTP'}
           </button>
 
         </form>

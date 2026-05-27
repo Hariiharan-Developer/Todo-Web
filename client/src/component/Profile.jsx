@@ -1,15 +1,40 @@
 import { useFormik } from "formik";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { updateSchema } from "../assets/validation";
+import { FaPaperPlane } from "react-icons/fa";
 
 const Profile = () => {
+  const navigate = useNavigate()
+  const token = localStorage.getItem('token')
   const formik = useFormik({
     initialValues: {
       name: "",
       email: "",
-      phone: "",
-    },
-    onSubmit: (values) => {
-      console.log(values);
-    },
+      password: "",
+    },validationSchema:updateSchema,
+    onSubmit: async function (){
+      try{
+        const res = await fetch('http://localhost:8000/api/v1/user/update',{
+          method:'put',
+          headers:{
+            'Content-Type' :'application/json',
+            'Authorization' :`Bearer ${token}`
+          },
+          body:JSON.stringify(formik.values)
+        })
+        const data = await res.json()
+        if(!res.ok){
+         return toast.error(data.message)
+        }
+        toast.success(data.message)
+        navigate('/')
+        
+      }catch(err){
+        toast.error('Internal server error')
+        console.log(err.message)
+      }
+    }
   });
 
   return (
@@ -69,9 +94,21 @@ const Profile = () => {
               placeholder="Enter your name"
               value={formik.values.name}
               onChange={formik.handleChange}
-              className="form-control form-control-lg border-0 text-white"
-              style={{ background: "#1f2937" }}
+              onBlur={formik.handleBlur}
+              className={`form-control form-control-lg rounded-3 border-0 ${
+              formik.touched.name && formik.errors.name ? "is-invalid" : ""
+              }`}
+              style={{
+                background: "#1f2937",
+                color: "#fff",
+              }}
             />
+             {formik.touched.name && formik.errors.name && (
+              <div className="invalid-feedback">
+                {formik.errors.name}
+              </div>
+            )}
+            
           </div>
 
           {/* EMAIL */}
@@ -86,26 +123,50 @@ const Profile = () => {
               placeholder="Enter your email"
               value={formik.values.email}
               onChange={formik.handleChange}
-              className="form-control form-control-lg border-0 text-white"
-              style={{ background: "#1f2937" }}
+              onBlur={formik.handleBlur}
+              className={`form-control form-control-lg rounded-3 border-0 ${
+              formik.touched.email && formik.errors.email ? "is-invalid" : ""
+              }`}
+              style={{
+                background: "#1f2937",
+                color: "#fff",
+              }}
             />
+             {formik.touched.email && formik.errors.email && (
+              <div className="invalid-feedback">
+                {formik.errors.email}
+              </div>
+            )}
+            
           </div>
 
-          {/* PHONE */}
+          {/* password */}
           <div className="mb-4">
             <label className="form-label text-light fw-semibold">
-              Phone Number
+              Password 
             </label>
 
             <input
-              type="text"
-              name="phone"
-              placeholder="Enter phone number"
-              value={formik.values.phone}
+              type="password"
+              name="password"
+              placeholder="Enter password "
+              value={formik.values.password}
               onChange={formik.handleChange}
-              className="form-control form-control-lg border-0 text-white"
-              style={{ background: "#1f2937" }}
+              onBlur={formik.handleBlur}
+              className={`form-control form-control-lg rounded-3 border-0 ${
+              formik.touched.password && formik.errors.password ? "is-invalid" : ""
+              }`}
+              style={{
+                background: "#1f2937",
+                color: "#fff",
+              }}
             />
+             {formik.touched.password && formik.errors.password && (
+              <div className="invalid-feedback">
+                {formik.errors.password}
+              </div>
+            )}
+            
           </div>
 
           {/* BUTTON */}
@@ -118,8 +179,8 @@ const Profile = () => {
               padding: "12px",
               borderRadius: "10px",
             }}
-          >
-            Update Profile
+          >{formik.isSubmitting ? <><FaPaperPlane style={{color:'black'}}/></> : 'Update Profile'}
+            
           </button>
 
         </form>

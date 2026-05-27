@@ -136,13 +136,61 @@ const forgetPassword = asyncHandler(async(req,res)=>{
     user.otpExpires = Date.now() + 5*60*1000
     await user.save()
 
-    await sendMail(
-        email,
-        'Password Reset OTP',
-        `Your OTP is: ${otp}. It will expire in 5 minutes.`
-    )
+   await sendMail(
+  email,
+  "Password Reset OTP",
+  `
+  <div style="font-family: Arial, sans-serif; background:#f4f4f4; padding:40px;">
+    
+    <div style="max-width:500px; margin:auto; background:white; border-radius:10px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+      
+      <div style="background:linear-gradient(to right,#7c3aed,#06b6d4); padding:20px; text-align:center; color:white;">
+        <h1 style="margin:0;">Password Reset</h1>
+      </div>
 
-    res.status(200).json({message:'OTP sent to email successfully'})
+      <div style="padding:30px; color:#333;">
+        <h2>Hello 👋</h2>
+
+        <p>
+          We received a request to reset your password.
+          Use the OTP below to continue:
+        </p>
+
+        <div style="margin:30px 0; text-align:center;">
+          <span style="
+            display:inline-block;
+            background:#111827;
+            color:white;
+            padding:15px 30px;
+            font-size:28px;
+            letter-spacing:5px;
+            border-radius:8px;
+            font-weight:bold;
+          ">
+            ${otp}
+          </span>
+        </div>
+
+        <p>
+          This OTP will expire in <b>5 minutes</b>.
+        </p>
+
+        <p style="color:#ef4444;">
+          If you did not request a password reset, please ignore this email.
+        </p>
+
+        <hr style="margin:30px 0;" />
+
+        <p style="font-size:14px; color:#6b7280; text-align:center;">
+          © 2026 Your App Name. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </div>
+  `
+);
+
+    res.status(200).json({message:'OTP sent to email successfully',user})
 })
 
 //VERIFY OTP :

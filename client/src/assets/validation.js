@@ -26,11 +26,17 @@ export const forgotPasswordSchema = yup.object().shape({
 })
 
 export const otpSchema = yup.object().shape({
-  otp: yup.string()
-    .required('OTP is required')
-    .matches(/^[0-9]{6}$/, 'OTP must be 6 digits')
-})
+  email: yup
+    .string()
+    .email("Enter a valid email id")
+    .required("Email is required"),
 
+  otp: yup
+    .string()
+    .required("OTP is required")
+    .length(6, "OTP must be exactly 6 digits")
+    .matches(/^[0-9]+$/, "OTP must contain only numbers"),
+});
 export const updatePasswodSchema = yup.object({
 
   newPassword: yup.string()
@@ -47,4 +53,10 @@ export const updatePasswodSchema = yup.object({
     )
     .required('Confirm password is required')
 
+})
+//PROFILE 
+export const updateSchema = yup.object().shape({
+  name:yup.string().required('This field is required'),
+  email:yup.string().email('Enter a vaild email addred').required('This field is required'),
+  password:yup.string().matches(passwordRegex,'Password must contain at least 1 uppercase, 1 lowercase, 1 number, 1 special character and be at least 8 characters long').required('This field is required')
 })

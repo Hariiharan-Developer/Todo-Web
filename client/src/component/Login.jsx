@@ -1,20 +1,47 @@
-import { useFormik } from 'formik'
+import { Formik, useFormik } from 'formik'
+import toast from 'react-hot-toast'
+import {Link, useNavigate} from 'react-router-dom'
+import { loginSchema } from '../assets/validation'
+import { FaPaperPlane } from 'react-icons/fa'
 
 const Login = () => {
-
+  const navigate = useNavigate()
   const {
     values,
     handleBlur,
     handleChange,
-    handleSubmit
+    handleSubmit,
+    isSubmitting,
+    errors,
+    touched
   } = useFormik({
     initialValues: {
       email: '',
       password: ''
     },
+    validationSchema:loginSchema,
+    onSubmit: async function handleSubmit(){
+      try{
+         const res = await fetch('http://localhost:8000/api/v1/user/login',{
+        method:'post',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(values)
+      })
+      const data = await res.json()
+      localStorage.setItem('token',data.token)
+      if(!res.ok){
+        return toast.error(data.message)
+      }
+      toast.success(data.message)
+      navigate('/')
+      
+      }catch(err){
+          toast.error('Internal Server Error')
+          console.log(err)
+      }
 
-    onSubmit: (values) => {
-      console.log(values)
     }
   })
 
@@ -82,12 +109,19 @@ const Login = () => {
               value={values.email}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="form-control form-control-lg rounded-3 border-0"
+              className={`form-control form-control-lg rounded-3 border-0 ${
+              touched.email && errors.email ? "is-invalid" : ""
+              }`}
               style={{
-                background: '#1f2937',
-                color: '#fff'
+                background: "#1f2937",
+                color: "#fff",
               }}
             />
+             {touched.email && errors.email && (
+              <div className="invalid-feedback">
+                {errors.email}
+              </div>
+            )}
 
           </div>
 
@@ -105,13 +139,20 @@ const Login = () => {
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
-              className="form-control form-control-lg rounded-3 border-0"
+              className={`form-control form-control-lg rounded-3 border-0 ${
+                touched.password && errors.password ? "is-invalid" : ""
+              }`}
               style={{
-                background: '#1f2937',
-                color: '#fff'
+                background: "#1f2937",
+                color: "#fff",
               }}
+              
             />
-
+             {touched.password && errors.password && (
+              <div className="invalid-feedback">
+                {errors.password}
+              </div>
+            )}
           </div>
 
           {/* Forgot Password */}
@@ -123,8 +164,8 @@ const Login = () => {
                 cursor: 'pointer',
                 fontSize: '14px'
               }}
-            >
-              Forgot Password?
+            ><Link className='text-decoration-none' to='/forget-password'> Forgot Password?</Link>
+             
             </span>
 
           </div>
@@ -158,7 +199,8 @@ const Login = () => {
               transition: '0.3s'
             }}
           >
-            Login
+            { isSubmitting ? <FaPaperPlane style={{color:'black'}} ></FaPaperPlane> : 
+            'Login'}
           </button>
 
         </form>
@@ -176,7 +218,8 @@ const Login = () => {
                 cursor: 'pointer'
               }}
             >
-              Register
+              <Link className='text-decoration-none' to='/register'>Register</Link>
+              
             </span>
 
           </p>
