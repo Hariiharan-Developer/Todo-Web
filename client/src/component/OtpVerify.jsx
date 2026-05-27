@@ -45,7 +45,7 @@ const VerifyOTP = () => {
     onSubmit: async (values) => {
       try {
         const res = await fetch(
-          "http://localhost:8000/api/v1/user/verify-OTP",
+          "https://auth-controller.onrender.com/api/v1/user/verify-OTP",
           {
             method: "POST",
             headers: {
@@ -78,7 +78,7 @@ const VerifyOTP = () => {
   const handleResendOTP = async () => {
     try {
       const res = await fetch(
-        "http://localhost:8000/api/v1/user/resend-OTP",
+        "https://auth-controller.onrender.com/api/v1/user/resend-OTP",
         {
           method: "POST",
           headers: {

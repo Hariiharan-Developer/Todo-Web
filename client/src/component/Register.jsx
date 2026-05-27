@@ -26,7 +26,7 @@ const Register = () => {
     validationSchema: registerSchema,
 
     onSubmit: async function handleSubmit(){
-      const res = await fetch('http://localhost:8000/api/v1/user/register',{
+      const res = await fetch('https://auth-controller.onrender.com/api/v1/user/register',{
         method:'post',
         headers:{
           'Content-Type':'application/json'

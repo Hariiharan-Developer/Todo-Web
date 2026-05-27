@@ -15,7 +15,7 @@ const Profile = () => {
     },validationSchema:updateSchema,
     onSubmit: async function (){
       try{
-        const res = await fetch('http://localhost:8000/api/v1/user/update',{
+        const res = await fetch('https://auth-controller.onrender.com/api/v1/user/update',{
           method:'put',
           headers:{
             'Content-Type' :'application/json',

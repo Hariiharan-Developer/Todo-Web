@@ -13,7 +13,7 @@ const ForgotPassword = () => {
     validationSchema: forgotPasswordSchema,
     onSubmit: async function handleSubmit(){
       try{
-        const res = await fetch('http://localhost:8000/api/v1/user/forget-password',{
+        const res = await fetch('https://auth-controller.onrender.com/api/v1/user/forget-password',{
           method:'post',
           headers:{
             'Content-Type':'application/json'

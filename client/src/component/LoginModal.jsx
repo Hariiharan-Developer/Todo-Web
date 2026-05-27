@@ -19,7 +19,7 @@ const LoginModal = ({ onClose }) => {
     onSubmit: async function () {
       try {
         const res = await fetch(
-          "http://localhost:8000/api/v1/user/login",
+          "https://auth-controller.onrender.com/api/v1/user/login",
           {
             method: "POST",
             headers: {

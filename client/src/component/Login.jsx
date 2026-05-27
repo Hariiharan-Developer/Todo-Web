@@ -22,7 +22,7 @@ const Login = () => {
     validationSchema:loginSchema,
     onSubmit: async function handleSubmit(){
       try{
-         const res = await fetch('http://localhost:8000/api/v1/user/login',{
+         const res = await fetch('https://auth-controller.onrender.com/api/v1/user/login',{
         method:'post',
         headers:{
           'Content-Type': 'application/json'
